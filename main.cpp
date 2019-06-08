@@ -24,10 +24,11 @@ void drawWalls(){
 
 void draw(){
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glLoadIdentity();glLoadIdentity();
+	glLoadIdentity();
 	gluLookAt(x, 1.0f, z,
               x+lx, 1.0f,  z+lz,
 			  0.0f, 1.0f,  0.0f);
+
     // Desenhar solo
 	glColor3f(0.9f, 0.9f, 0.9f);
 	glBegin(GL_QUADS);
@@ -108,7 +109,7 @@ void draw(){
 
 void processSpecialKeys(int key, int xx, int yy) {
 	float amount = 0.5f;
-	cout << "X " << lx << " Y " << lz << endl;
+
 	switch (key) {
 		case GLUT_KEY_LEFT :
 			angle -= 0.1f;
