@@ -6,7 +6,7 @@
 #include <cmath>
 using namespace std;
 int gameSpeed = 10;
-int _width = 400, _height = 400;
+int _width = 600, _height = 600;
 GLfloat light_diffuse[] = {1.0, 0.0, 0.0, 1.0};
 GLfloat light_ambient[] = {0.1, 0.5, 0.5, 1.0};
 GLfloat light_specular[] = {1.0, 1.0, 1.0, 1.0};
@@ -15,11 +15,9 @@ GLdouble angle=0.0; //�ngulo da c�mera
 GLdouble lx=0.0f,lz=-1.0f; //dire��o da c�mera
 GLdouble x=0.0f,z=5.0f; //posi��o da c�mera
 
-void drawWalls(){
-	glColor3f(1.0f, 1.0f, 1.0f);
-    // Desenhar corpo
-	glTranslatef(0.0f ,0.75f, 0.0f);
-	glutSolidCube(3.0f);
+void drawWallMap(){
+	//glColor3f(0.0f, 0.0f, 1.0f);
+	glutSolidCube(20.0f);
 }
 
 void draw(){
@@ -94,16 +92,27 @@ void draw(){
 
 
 	glDisable(GL_TEXTURE_2D);
+    glColor3f(0.0f, 0.0f, 1.0f);
+    glPushMatrix();
+    glTranslatef(-20.0,0,-20.0);
+    drawWallMap();
+    glPopMatrix();
 
-    //Desenhar as paredes
-	for(int i = -3; i < 3; i++){
-		for(int j=-3; j < 3; j++) {
-			glPushMatrix();
-			glTranslatef(i*10.0,0,j * 10.0);
-			drawWalls();
-			glPopMatrix();
-		}
-	}
+    glPushMatrix();
+    glTranslatef(20.0,0,20.0);
+    drawWallMap();
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(-20.0,0,20.0);
+    drawWallMap();
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(20.0,0,-20.0);
+    drawWallMap();
+    glPopMatrix();
+
 	glutSwapBuffers();
 }
 
@@ -154,8 +163,8 @@ void processNormalKeys(unsigned char key, int x, int y) {
 int main(int argc, char **argv){
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
-	glutInitWindowPosition(100,100);
-	glutInitWindowSize(320,320);
+	glutInitWindowPosition(300,50);
+	glutInitWindowSize(_width,_height);
 	glutCreateWindow("MY GAME");
 	glutDisplayFunc(draw);
 	glutTimerFunc(10,timerFunc,0);
