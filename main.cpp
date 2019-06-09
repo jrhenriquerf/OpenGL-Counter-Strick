@@ -4,6 +4,8 @@
 #include <cstdlib>
 #include <GL/glext.h>
 #include <cmath>
+#include "leitorBMP.h"
+
 using namespace std;
 int gameSpeed = 10;
 int _width = 600, _height = 600;
@@ -14,37 +16,88 @@ GLfloat light_position[] = {1.0, 0.0, -5.0, 0.0};
 GLdouble angle=0.0; //�ngulo da c�mera
 GLdouble lx=0.0f,lz=-1.0f; //dire��o da c�mera
 GLdouble x=0.0f,z=5.0f; //posi��o da c�mera
+GLuint textureID[2];
 
-void drawWallMap(){
-	//glColor3f(0.0f, 0.0f, 1.0f);
-	glutSolidCube(20.0f);
+static void drawBox(GLfloat size, GLenum type, int idTexture)
+{
+    glBindTexture(GL_TEXTURE_2D, textureID[idTexture]);
+
+    static GLfloat n[6][3] =
+    {
+        {-1.0, 0.0, 0.0},
+        {0.0, 1.0, 0.0},
+        {1.0, 0.0, 0.0},
+        {0.0, -1.0, 0.0},
+        {0.0, 0.0, 1.0},
+        {0.0, 0.0, -1.0}
+    };
+    static GLint faces[6][4] =
+    {
+        {0, 1, 2, 3},
+        {3, 2, 6, 7},
+        {7, 6, 5, 4},
+        {4, 5, 1, 0},
+        {5, 6, 2, 1},
+        {7, 4, 0, 3}
+    };
+
+    GLfloat v[8][3];
+    GLint i;
+
+    v[0][0] = v[1][0] = v[2][0] = v[3][0] = -size / 2;
+    v[4][0] = v[5][0] = v[6][0] = v[7][0] = size / 2;
+    v[0][1] = v[1][1] = v[4][1] = v[5][1] = -size / 2;
+    v[2][1] = v[3][1] = v[6][1] = v[7][1] = size / 2;
+    v[0][2] = v[3][2] = v[4][2] = v[7][2] = -size / 2;
+    v[1][2] = v[2][2] = v[5][2] = v[6][2] = size / 2;
+
+    for (i = 5; i >= 0; i--) {
+        glBegin(type);
+        glNormal3fv(&n[i][0]);
+        glTexCoord2f(0.0, 1.0);
+        glVertex3fv(&v[faces[i][0]][0]);
+        glTexCoord2f(0.0, 0.0);
+        glVertex3fv(&v[faces[i][1]][0]);
+        glTexCoord2f(1.0, 0.0);
+        glVertex3fv(&v[faces[i][2]][0]);
+        glTexCoord2f(1.0, 1.0);
+        glVertex3fv(&v[faces[i][3]][0]);
+        glEnd();
+    }
 }
 
-void draw(){
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glLoadIdentity();
-	gluLookAt(x, 1.0f, z,
-              x+lx, 1.0f,  z+lz,
-			  0.0f, 1.0f,  0.0f);
+void drawWallMap() {
+	glColor3d(0.8, 0.8, 0.9);
+	glEnable(GL_TEXTURE_2D);
+	drawBox(20, GL_QUADS, 1);
+	glDisable(GL_TEXTURE_2D);
+}
 
-    // Desenhar solo
-	glColor3f(0.9f, 0.9f, 0.9f);
-	glBegin(GL_QUADS);
-		glVertex3f(-50.0f, 0.0f, -50.0f);
-		glVertex3f(-50.0f, 0.0f,  50.0f);
-		glVertex3f( 50.0f, 0.0f,  50.0f);
-		glVertex3f( 50.0f, 0.0f, -50.0f);
-	glEnd();
+void drawSmallWallMap() {
+    glColor3d(0.5, 0.26, 0.26);
+    glEnable(GL_TEXTURE_2D);
+    glScaled(1, 1, .3);
+	drawBox(5, GL_QUADS, 0);
+	glDisable(GL_TEXTURE_2D);
+}
+
+void drawAroundWalls() {
+    glColor3d(1, 1, 1);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, textureID[1]);
 
     //Muro trás
 	glPushMatrix();
 	glTranslated(0, 0, 50);
 	glRotated(90, -1, 0, 0);
-    glColor3f(1.0f, 0.0f, 0.0f);
 	glBegin(GL_QUADS);
+        glTexCoord2f(0.0, 1.0);
 		glVertex3f(-50.0f, 0.0f, 0);
+		glTexCoord2f(0.0, 0.0);
 		glVertex3f(-50.0f, 0.0f, 10.0f);
+		glTexCoord2f(1.0, 0.0);
 		glVertex3f( 50.0f, 0.0f, 10.0f);
+		glTexCoord2f(1.0, 1.0);
 		glVertex3f( 50.0f, 0.0f, 0);
 	glEnd();
 	glPopMatrix();
@@ -53,11 +106,14 @@ void draw(){
 	glPushMatrix();
 	glTranslated(0, 0, -50);
 	glRotated(90, -1, 0, 0);
-    glColor3f(1.0f, 0.0f, 0.0f);
 	glBegin(GL_QUADS);
+        glTexCoord2f(0.0, 1.0);
 		glVertex3f(-50.0f, 0.0f, 0);
+		glTexCoord2f(0.0, 0.0);
 		glVertex3f(-50.0f, 0.0f, 10.0f);
+		glTexCoord2f(1.0, 0.0);
 		glVertex3f( 50.0f, 0.0f, 10.0f);
+		glTexCoord2f(1.0, 1.0);
 		glVertex3f( 50.0f, 0.0f, 0);
 	glEnd();
 	glPopMatrix();
@@ -67,11 +123,14 @@ void draw(){
 	glTranslated(-50, 0, 0);
 	glRotated(90, 0, 1, 0);
 	glRotated(90, -1, 0, 0);
-    glColor3f(0.0f, 1.0f, 0.0f);
 	glBegin(GL_QUADS);
+        glTexCoord2f(0.0, 1.0);
 		glVertex3f(50.0f, 0.0f, 0);
+		glTexCoord2f(0.0, 0.0);
 		glVertex3f(50.0f, 0.0f, 10.0f);
+		glTexCoord2f(1.0, 0.0);
 		glVertex3f(-50.0f, 0.0f, 10.0f);
+		glTexCoord2f(1.0, 1.0);
 		glVertex3f(-50.0f, 0.0f, 0);
 	glEnd();
 	glPopMatrix();
@@ -81,18 +140,42 @@ void draw(){
 	glTranslated(50, 0, 0);
 	glRotated(90, 0, 1, 0);
 	glRotated(90, -1, 0, 0);
-    glColor3f(0.0f, 1.0f, 0.0f);
 	glBegin(GL_QUADS);
+        glTexCoord2f(0.0, 1.0);
 		glVertex3f(50.0f, 0.0f, 0);
+		glTexCoord2f(0.0, 0.0);
 		glVertex3f(50.0f, 0.0f, 10.0f);
+		glTexCoord2f(1.0, 0.0);
 		glVertex3f(-50.0f, 0.0f, 10.0f);
+		glTexCoord2f(1.0, 1.0);
 		glVertex3f(-50.0f, 0.0f, 0);
 	glEnd();
 	glPopMatrix();
-
-
 	glDisable(GL_TEXTURE_2D);
-    glColor3f(0.0f, 0.0f, 1.0f);
+}
+
+void drawFloor() {
+    glPushMatrix();
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, textureID[1]);
+    // Desenhar solo
+	glColor3d(1, 1, 1);
+	glBegin(GL_QUADS);
+        glTexCoord2f(0.0, 1.0);
+		glVertex3f(-50.0f, 0.0f, -50.0f);
+		glTexCoord2f(0.0, 0.0);
+		glVertex3f(-50.0f, 0.0f,  50.0f);
+		glTexCoord2f(1.0, 0.0);
+		glVertex3f( 50.0f, 0.0f,  50.0f);
+		glTexCoord2f(1.0, 1.0);
+		glVertex3f( 50.0f, 0.0f, -50.0f);
+	glEnd();
+	glPopMatrix();
+    glDisable(GL_TEXTURE_2D);
+}
+
+void drawBigBlocks() {
+    //Desenhar blocos grandes
     glPushMatrix();
     glTranslatef(-20.0,0,-20.0);
     drawWallMap();
@@ -112,6 +195,42 @@ void draw(){
     glTranslatef(20.0,0,-20.0);
     drawWallMap();
     glPopMatrix();
+}
+
+void drawSmallBlocks() {
+    //Desenhar bloquinhos
+    glPushMatrix();
+    glTranslatef(-32.0,0,-29.2);
+    drawSmallWallMap();
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(32.0,0,29.2);
+    drawSmallWallMap();
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(-32.0,0,29.2);
+    drawSmallWallMap();
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(32.0,0,-29.2);
+    drawSmallWallMap();
+    glPopMatrix();
+}
+
+void draw(){
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glLoadIdentity();
+	gluLookAt(x, 3.0f, z,
+              x+lx, 3.0f,  z+lz,
+			  0.0f, 1.0f,  0.0f);
+
+    drawFloor();
+    drawAroundWalls();
+    drawBigBlocks();
+    drawSmallBlocks();
 
 	glutSwapBuffers();
 }
@@ -160,6 +279,26 @@ void processNormalKeys(unsigned char key, int x, int y) {
 		exit(0);
 }
 
+void loadTexture()
+{
+    loadBMP("bricks.bmp");
+    glEnable(GL_TEXTURE_2D);
+
+    glGenTextures(2, textureID);
+    glBindTexture(GL_TEXTURE_2D, textureID[0]);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, data);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+    loadBMP("gelo.bmp");
+    glBindTexture(GL_TEXTURE_2D, textureID[1]);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, data);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+}
+
 int main(int argc, char **argv){
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
@@ -171,6 +310,7 @@ int main(int argc, char **argv){
 	glutKeyboardFunc(processNormalKeys);
 	glutSpecialFunc(processSpecialKeys);
 	configureCam();
+	loadTexture();
 	glutMainLoop();
 	return 0;
 }
