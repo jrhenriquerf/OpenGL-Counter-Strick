@@ -333,6 +333,12 @@ void mouseMoviment(int x, int y) {
         ly -= 0.03f;
     }
     baseY = y;
+
+    if(x >= 580 || x <= 20)
+        glutWarpPointer(_width / 2, y);
+
+    if(y >= 580 || y <= 20)
+        glutWarpPointer(x, _height / 2);
 }
 
 int main(int argc, char **argv){
@@ -348,6 +354,8 @@ int main(int argc, char **argv){
 	glutPassiveMotionFunc(mouseMoviment);
 	configureCam();
 	loadTexture();
+	glutSetCursor(GLUT_CURSOR_NONE);
+	glutWarpPointer(_width / 2, _height / 2);
 	glutMainLoop();
 	return 0;
 }
