@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1560057997 source:d:\documentos\onedrive\ciencia da computação\4º ano\computação gráfica\3d\counterstrickprova\main.cpp
+1560062397 source:d:\documentos\onedrive\ciencia da computação\4º ano\computação gráfica\3d\counterstrickprova\main.cpp
 	<iostream>
 	<GL/freeglut.h>
 	<ctime>
@@ -26,6 +26,6 @@
 1426360528 c:\freeglut\include\gl\freeglut_ext.h
 	<stdarg.h>
 
-1557972158 d:\documentos\onedrive\ciencia da computação\4º ano\computação gráfica\3d\counterstrickprova\include\leitorbmp.h
+1560059358 d:\documentos\onedrive\ciencia da computação\4º ano\computação gráfica\3d\counterstrickprova\include\leitorbmp.h
 	<fstream>
 

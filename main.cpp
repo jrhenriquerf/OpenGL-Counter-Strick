@@ -9,13 +9,14 @@
 using namespace std;
 int gameSpeed = 10;
 int _width = 600, _height = 600;
+int baseX = 0, baseY = 0;
 GLfloat light_diffuse[] = {1.0, 0.0, 0.0, 1.0};
 GLfloat light_ambient[] = {0.1, 0.5, 0.5, 1.0};
 GLfloat light_specular[] = {1.0, 1.0, 1.0, 1.0};
 GLfloat light_position[] = {1.0, 0.0, -5.0, 0.0};
 GLdouble angle=0.0; //�ngulo da c�mera
-GLdouble lx=0.0f,lz=-1.0f; //dire��o da c�mera
-GLdouble x=0.0f,z=5.0f; //posi��o da c�mera
+GLdouble lx=0.0f,lz=-1.0f, ly = 0.0f; //dire��o da c�mera
+GLdouble x=0.0f,z=5.0f, y = 3.0f; //posi��o da c�mera
 GLuint textureID[2];
 
 static void drawBox(GLfloat size, GLenum type, int idTexture)
@@ -223,8 +224,8 @@ void drawSmallBlocks() {
 void draw(){
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
-	gluLookAt(x, 3.0f, z,
-              x+lx, 3.0f,  z+lz,
+	gluLookAt(x, y, z,
+              x+lx, y+ly,  z+lz,
 			  0.0f, 1.0f,  0.0f);
 
     drawFloor();
@@ -240,14 +241,10 @@ void processSpecialKeys(int key, int xx, int yy) {
 
 	switch (key) {
 		case GLUT_KEY_LEFT :
-			angle -= 0.1f;
-			lx = sin(angle);
-			lz = -cos(angle);
+		    x -= lx + amount;
 			break;
 		case GLUT_KEY_RIGHT :
-			angle += 0.1f;
-			lx = sin(angle);
-			lz = -cos(angle);
+		    x += lx + amount;
 			break;
 		case GLUT_KEY_UP :
 			x += lx * amount;
@@ -274,7 +271,26 @@ void configureCam(){
     glEnable(GL_DEPTH_TEST);
 }
 
-void processNormalKeys(unsigned char key, int x, int y) {
+void processNormalKeys(unsigned char key, int xx, int yy) {
+    float amount = 0.5f;
+
+	switch (key) {
+		case 'a':
+		    //x += lx - amount;
+			break;
+		case 'd':
+		    //x += lx + amount;
+			break;
+		case 'w':
+			x += lx * amount;
+			z += lz * amount;
+			break;
+		case 's':
+			x -= lx * amount;
+			z -= lz * amount;
+			break;
+	}
+
 	if (key == 27)
 		exit(0);
 }
@@ -299,6 +315,32 @@ void loadTexture()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 }
 
+void mouseMoviment(int x, int y) {
+    if(x < baseX) {
+        angle -= 0.03f;
+        lx = sin(angle);
+        lz = -cos(angle);
+    }else if(x > baseX){
+        angle += 0.03f;
+        lx = sin(angle);
+        lz = -cos(angle);
+    }
+    baseX = x;
+
+    if(y < baseY) {
+        ly += 0.03f;
+    }else if(y > baseY){
+        ly -= 0.03f;
+    }
+    baseY = y;
+
+    if(x >= 580 || x <= 20)
+        glutWarpPointer(_width / 2, y);
+
+    if(y >= 580 || y <= 20)
+        glutWarpPointer(x, _height / 2);
+}
+
 int main(int argc, char **argv){
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
@@ -309,8 +351,11 @@ int main(int argc, char **argv){
 	glutTimerFunc(10,timerFunc,0);
 	glutKeyboardFunc(processNormalKeys);
 	glutSpecialFunc(processSpecialKeys);
+	glutPassiveMotionFunc(mouseMoviment);
 	configureCam();
 	loadTexture();
+	glutSetCursor(GLUT_CURSOR_NONE);
+	glutWarpPointer(_width / 2, _height / 2);
 	glutMainLoop();
 	return 0;
 }
