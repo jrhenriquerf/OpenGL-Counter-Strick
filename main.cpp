@@ -18,9 +18,18 @@ GLdouble angle=0.0; //�ngulo da c�mera
 GLdouble lx=0.0f,lz=-1.0f, ly = 0.0f; //dire��o da c�mera
 GLdouble x=0.0f,z=5.0f, y = 3.0f; //posi��o da c�mera
 GLuint textureID[2];
+GLfloat v[8][3];
 
-static void drawBox(GLfloat size, GLenum type, int idTexture)
-{
+void setBoxSize(GLfloat size) {
+    v[0][0] = v[1][0] = v[2][0] = v[3][0] = -size / 2;
+    v[4][0] = v[5][0] = v[6][0] = v[7][0] = size / 2;
+    v[0][1] = v[1][1] = v[4][1] = v[5][1] = -size / 2;
+    v[2][1] = v[3][1] = v[6][1] = v[7][1] = size / 2;
+    v[0][2] = v[3][2] = v[4][2] = v[7][2] = -size / 2;
+    v[1][2] = v[2][2] = v[5][2] = v[6][2] = size / 2;
+}
+
+static void drawBox(GLenum type, int idTexture, GLfloat v[8][3]) {
     glBindTexture(GL_TEXTURE_2D, textureID[idTexture]);
 
     static GLfloat n[6][3] =
@@ -32,6 +41,7 @@ static void drawBox(GLfloat size, GLenum type, int idTexture)
         {0.0, 0.0, 1.0},
         {0.0, 0.0, -1.0}
     };
+
     static GLint faces[6][4] =
     {
         {0, 1, 2, 3},
@@ -42,16 +52,7 @@ static void drawBox(GLfloat size, GLenum type, int idTexture)
         {7, 4, 0, 3}
     };
 
-    GLfloat v[8][3];
     GLint i;
-
-    v[0][0] = v[1][0] = v[2][0] = v[3][0] = -size / 2;
-    v[4][0] = v[5][0] = v[6][0] = v[7][0] = size / 2;
-    v[0][1] = v[1][1] = v[4][1] = v[5][1] = -size / 2;
-    v[2][1] = v[3][1] = v[6][1] = v[7][1] = size / 2;
-    v[0][2] = v[3][2] = v[4][2] = v[7][2] = -size / 2;
-    v[1][2] = v[2][2] = v[5][2] = v[6][2] = size / 2;
-
     for (i = 5; i >= 0; i--) {
         glBegin(type);
         glNormal3fv(&n[i][0]);
@@ -70,7 +71,8 @@ static void drawBox(GLfloat size, GLenum type, int idTexture)
 void drawWallMap() {
 	glColor3d(0.8, 0.8, 0.9);
 	glEnable(GL_TEXTURE_2D);
-	drawBox(20, GL_QUADS, 1);
+	setBoxSize(20);
+	drawBox(GL_QUADS, 1, v);
 	glDisable(GL_TEXTURE_2D);
 }
 
@@ -78,7 +80,8 @@ void drawSmallWallMap() {
     glColor3d(0.5, 0.26, 0.26);
     glEnable(GL_TEXTURE_2D);
     glScaled(1, 1, .3);
-	drawBox(5, GL_QUADS, 0);
+    setBoxSize(5);
+	drawBox(GL_QUADS, 0, v);
 	glDisable(GL_TEXTURE_2D);
 }
 
@@ -218,6 +221,59 @@ void drawSmallBlocks() {
     glPushMatrix();
     glTranslatef(32.0,0,-29.2);
     drawSmallWallMap();
+    glPopMatrix();
+
+
+    GLfloat size = 6;
+    v[1][0] = v[0][0] = -size / 2;
+    v[2][0] = v[3][0] = -size / 2;
+
+    v[4][0] = v[5][0] = size / 2;
+    v[6][0] = v[7][0] = size / 2;
+
+    v[0][1] = v[1][1] = -size / 2;
+    v[4][1] = v[5][1] = -size / 2;
+
+    v[2][1] = v[3][1] = size / 2;
+    v[6][1] = v[7][1] = size / 2;
+
+    v[0][2] = v[3][2] = -size / 2;
+    v[4][2] = v[7][2] = -size / 2;
+
+    v[1][2] = v[2][2] = size / 2;
+    v[5][2] = v[6][2] = size / 2;
+    glPushMatrix();
+        glTranslatef(48.0,0,0);
+        glColor3d(0.5, 0.26, 0.26);
+        glEnable(GL_TEXTURE_2D);
+        glScaled(1, 1, .3);
+        setBoxSize(6);
+
+        v[1][0] = v[0][0] = -size / 2 - 3;
+        v[2][0] = v[3][0] = -size / 2 - 3;
+
+        v[6][1] = v[7][1] = size / 2 + 3;
+        drawBox(GL_QUADS, 0, v);
+        glDisable(GL_TEXTURE_2D);
+    glPopMatrix();
+
+    glPushMatrix();
+        glTranslatef(-48.0,0,0);
+        glColor3d(0.5, 0.26, 0.26);
+        glEnable(GL_TEXTURE_2D);
+        glScaled(1, 1, .3);
+        setBoxSize(6);
+        v[1][0] = v[0][0] = -size / 2;
+        v[2][0] = v[3][0] = -size / 2;
+
+        v[6][1] = v[7][1] = size / 2;
+
+        v[2][1] = v[3][1] = size / 2 + 3;
+
+        v[4][0] = v[5][0] = size / 2 + 3;
+        v[6][0] = v[7][0] = size / 2 + 3;
+        drawBox(GL_QUADS, 0, v);
+        glDisable(GL_TEXTURE_2D);
     glPopMatrix();
 }
 
