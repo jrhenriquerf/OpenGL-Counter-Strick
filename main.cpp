@@ -16,7 +16,8 @@ GLfloat light_specular[] = {1.0, 1.0, 1.0, 1.0};
 GLfloat light_position[] = {1.0, 0.0, -5.0, 0.0};
 GLdouble angle=0.0; //�ngulo da c�mera
 GLdouble lx=0.0f,lz=-1.0f, ly = 0.0f; //dire��o da c�mera
-GLdouble x=0.0f,z=5.0f, y = 3.0f; //posi��o da c�mera
+GLdouble x=0.0f,z=5.0f, y = 3.0f, puloIncrement = 0, agaixamentoIncrement = 0; //posi��o da c�mera
+bool pulando = false, agaixando = false;
 GLuint textureID[2];
 
 static void drawBox(GLfloat size, GLenum type, int idTexture)
@@ -236,28 +237,31 @@ void draw(){
 	glutSwapBuffers();
 }
 
-void processSpecialKeys(int key, int xx, int yy) {
-	float amount = 0.5f;
-
-	switch (key) {
-		case GLUT_KEY_LEFT :
-		    x -= lx + amount;
-			break;
-		case GLUT_KEY_RIGHT :
-		    x += lx + amount;
-			break;
-		case GLUT_KEY_UP :
-			x += lx * amount;
-			z += lz * amount;
-			break;
-		case GLUT_KEY_DOWN :
-			x -= lx * amount;
-			z -= lz * amount;
-			break;
-	}
-}
-
 void timerFunc(int x){
+    if(pulando && puloIncrement <= 3) {
+        puloIncrement += 0.1;
+        y += 0.1;
+
+        if(puloIncrement >= 3) {
+            pulando = false;
+        }
+    }
+
+    if (!pulando && puloIncrement > 0) {
+        puloIncrement -= 0.1;
+        y -= 0.1;
+    }
+
+    if (agaixando) {
+        if (y >= 0.5) {
+            y -= 0.1;
+        }
+    } else {
+        if (y <= 3) {
+            y += 0.1;
+        }
+    }
+
     glutPostRedisplay();
     glutTimerFunc(gameSpeed,timerFunc,0);
 }
@@ -276,10 +280,10 @@ void processNormalKeys(unsigned char key, int xx, int yy) {
 
 	switch (key) {
 		case 'a':
-		    //x += lx - amount;
+		    x += lx * amount - amount;
 			break;
 		case 'd':
-		    //x += lx + amount;
+		    x += lx * amount + amount;
 			break;
 		case 'w':
 			x += lx * amount;
@@ -293,6 +297,43 @@ void processNormalKeys(unsigned char key, int xx, int yy) {
 
 	if (key == 27)
 		exit(0);
+
+    if (key == 32) {
+        pulando = true;
+    }
+}
+
+void procesSpecialUpKeys(int key, int xx, int yy)
+{
+    switch (key) {
+        case GLUT_KEY_CTRL_L:
+            agaixando = false;
+            break;
+    }
+}
+
+void processSpecialKeys(int key, int xx, int yy) {
+	float amount = 0.5f;
+
+	switch (key) {
+		case GLUT_KEY_LEFT :
+		    x -= lx + amount;
+			break;
+		case GLUT_KEY_RIGHT :
+		    x += lx + amount;
+			break;
+		case GLUT_KEY_UP :
+			x += lx * amount;
+			z += lz * amount;
+			break;
+		case GLUT_KEY_DOWN :
+			x -= lx * amount;
+			z -= lz * amount;
+			break;
+        case GLUT_KEY_CTRL_L:
+            agaixando = true;
+            break;
+	}
 }
 
 void loadTexture()
@@ -334,10 +375,10 @@ void mouseMoviment(int x, int y) {
     }
     baseY = y;
 
-    if(x >= 580 || x <= 20)
+    if(x >= 500 || x <= 100)
         glutWarpPointer(_width / 2, y);
 
-    if(y >= 580 || y <= 20)
+    if(y >= 500 || y <= 100)
         glutWarpPointer(x, _height / 2);
 }
 
@@ -351,6 +392,7 @@ int main(int argc, char **argv){
 	glutTimerFunc(10,timerFunc,0);
 	glutKeyboardFunc(processNormalKeys);
 	glutSpecialFunc(processSpecialKeys);
+	glutSpecialUpFunc(procesSpecialUpKeys);
 	glutPassiveMotionFunc(mouseMoviment);
 	configureCam();
 	loadTexture();
