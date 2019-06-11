@@ -72,7 +72,7 @@ void drawWallMap() {
 	glColor3d(0.8, 0.8, 0.9);
 	glEnable(GL_TEXTURE_2D);
 	setBoxSize(20);
-	drawBox(GL_QUADS, 1, v);
+	drawBox(GL_QUADS, 2, v);
 	glDisable(GL_TEXTURE_2D);
 }
 
@@ -88,7 +88,7 @@ void drawSmallWallMap() {
 void drawAroundWalls() {
     glColor3d(1, 1, 1);
     glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, textureID[1]);
+    glBindTexture(GL_TEXTURE_2D, textureID[2]);
 
     //Muro trás
 	glPushMatrix();
@@ -98,9 +98,9 @@ void drawAroundWalls() {
         glTexCoord2f(0.0, 1.0);
 		glVertex3f(-50.0f, 0.0f, 0);
 		glTexCoord2f(0.0, 0.0);
-		glVertex3f(-50.0f, 0.0f, 10.0f);
+		glVertex3f(-50.0f, 0.0f, 15.0f);
 		glTexCoord2f(1.0, 0.0);
-		glVertex3f( 50.0f, 0.0f, 10.0f);
+		glVertex3f( 50.0f, 0.0f, 15.0f);
 		glTexCoord2f(1.0, 1.0);
 		glVertex3f( 50.0f, 0.0f, 0);
 	glEnd();
@@ -114,9 +114,9 @@ void drawAroundWalls() {
         glTexCoord2f(0.0, 1.0);
 		glVertex3f(-50.0f, 0.0f, 0);
 		glTexCoord2f(0.0, 0.0);
-		glVertex3f(-50.0f, 0.0f, 10.0f);
+		glVertex3f(-50.0f, 0.0f, 15.0f);
 		glTexCoord2f(1.0, 0.0);
-		glVertex3f( 50.0f, 0.0f, 10.0f);
+		glVertex3f( 50.0f, 0.0f, 15.0f);
 		glTexCoord2f(1.0, 1.0);
 		glVertex3f( 50.0f, 0.0f, 0);
 	glEnd();
@@ -131,9 +131,9 @@ void drawAroundWalls() {
         glTexCoord2f(0.0, 1.0);
 		glVertex3f(50.0f, 0.0f, 0);
 		glTexCoord2f(0.0, 0.0);
-		glVertex3f(50.0f, 0.0f, 10.0f);
+		glVertex3f(50.0f, 0.0f, 15.0f);
 		glTexCoord2f(1.0, 0.0);
-		glVertex3f(-50.0f, 0.0f, 10.0f);
+		glVertex3f(-50.0f, 0.0f, 15.0f);
 		glTexCoord2f(1.0, 1.0);
 		glVertex3f(-50.0f, 0.0f, 0);
 	glEnd();
@@ -148,9 +148,9 @@ void drawAroundWalls() {
         glTexCoord2f(0.0, 1.0);
 		glVertex3f(50.0f, 0.0f, 0);
 		glTexCoord2f(0.0, 0.0);
-		glVertex3f(50.0f, 0.0f, 10.0f);
+		glVertex3f(50.0f, 0.0f, 15.0f);
 		glTexCoord2f(1.0, 0.0);
-		glVertex3f(-50.0f, 0.0f, 10.0f);
+		glVertex3f(-50.0f, 0.0f, 15.0f);
 		glTexCoord2f(1.0, 1.0);
 		glVertex3f(-50.0f, 0.0f, 0);
 	glEnd();
@@ -289,6 +289,7 @@ void draw(){
 			  0.0f, 1.0f,  0.0f);
 
     drawFloor();
+    drawSky();
     drawAroundWalls();
     drawBigBlocks();
     drawSmallBlocks();
