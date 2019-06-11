@@ -17,7 +17,7 @@ GLfloat light_position[] = {1.0, 0.0, -5.0, 0.0};
 GLdouble angle=0.0; //�ngulo da c�mera
 GLdouble lx=0.0f,lz=-1.0f, ly = 0.0f; //dire��o da c�mera
 GLdouble x=0.0f,z=5.0f, y = 3.0f; //posi��o da c�mera
-GLuint textureID[2];
+GLuint textureID[4];
 GLfloat v[8][3];
 
 void setBoxSize(GLfloat size) {
@@ -158,6 +158,26 @@ void drawAroundWalls() {
 	glDisable(GL_TEXTURE_2D);
 }
 
+void drawSky()
+{
+    glPushMatrix();
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, textureID[3]);
+	glColor3d(1, 1, 1);
+	glBegin(GL_QUADS);
+        glTexCoord2f(0.0, 1.0);
+		glVertex3f(-50.0f, 15.0f, -50.0f);
+		glTexCoord2f(0.0, 0.0);
+		glVertex3f(-50.0f, 15.0f,  50.0f);
+		glTexCoord2f(1.0, 0.0);
+		glVertex3f( 50.0f, 15.0f,  50.0f);
+		glTexCoord2f(1.0, 1.0);
+		glVertex3f( 50.0f, 15.0f, -50.0f);
+	glEnd();
+	glPopMatrix();
+    glDisable(GL_TEXTURE_2D);
+}
+
 void drawFloor() {
     glPushMatrix();
     glEnable(GL_TEXTURE_2D);
@@ -225,23 +245,7 @@ void drawSmallBlocks() {
 
 
     GLfloat size = 6;
-    v[1][0] = v[0][0] = -size / 2;
-    v[2][0] = v[3][0] = -size / 2;
-
-    v[4][0] = v[5][0] = size / 2;
-    v[6][0] = v[7][0] = size / 2;
-
-    v[0][1] = v[1][1] = -size / 2;
-    v[4][1] = v[5][1] = -size / 2;
-
-    v[2][1] = v[3][1] = size / 2;
-    v[6][1] = v[7][1] = size / 2;
-
-    v[0][2] = v[3][2] = -size / 2;
-    v[4][2] = v[7][2] = -size / 2;
-
-    v[1][2] = v[2][2] = size / 2;
-    v[5][2] = v[6][2] = size / 2;
+    setBoxSize(size);
     glPushMatrix();
         glTranslatef(48.0,0,0);
         glColor3d(0.5, 0.26, 0.26);
@@ -356,15 +360,29 @@ void loadTexture()
     loadBMP("bricks.bmp");
     glEnable(GL_TEXTURE_2D);
 
-    glGenTextures(2, textureID);
+    glGenTextures(4, textureID);
     glBindTexture(GL_TEXTURE_2D, textureID[0]);
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, data);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
-    loadBMP("gelo.bmp");
+    loadBMP("floor_fods.bmp");
     glBindTexture(GL_TEXTURE_2D, textureID[1]);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, data);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+    loadBMP("gelo.bmp");
+    glBindTexture(GL_TEXTURE_2D, textureID[2]);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, data);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+    loadBMP("ceu.bmp");
+    glBindTexture(GL_TEXTURE_2D, textureID[3]);
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, data);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
