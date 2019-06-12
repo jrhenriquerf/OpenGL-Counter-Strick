@@ -4,7 +4,7 @@
 #include <cstdlib>
 #include <GL/glext.h>
 #include <cmath>
-#include "leitorBMP.h"
+#include "include/leitorBMP.h"
 
 using namespace std;
 int gameSpeed = 10;
@@ -16,7 +16,8 @@ GLfloat light_specular[] = {1.0, 1.0, 1.0, 1.0};
 GLfloat light_position[] = {1.0, 0.0, -5.0, 0.0};
 GLdouble angle=0.0; //�ngulo da c�mera
 GLdouble lx=0.0f,lz=-1.0f, ly = 0.0f; //dire��o da c�mera
-GLdouble x=0.0f,z=5.0f, y = 3.0f; //posi��o da c�mera
+GLdouble x=0.0f,z=5.0f, y = 3.0f, puloIncrement = 0, agaixamentoIncrement = 0; //posi��o da c�mera
+bool pulando = false, agaixando = false;
 GLuint textureID[6];
 GLfloat v[8][3];
 
@@ -376,7 +377,80 @@ void draw(){
 	glutSwapBuffers();
 }
 
+void timerFunc(int x){
+    if(pulando && puloIncrement <= 3) {
+        puloIncrement += 0.1;
+        y += 0.1;
 
+        if(puloIncrement >= 3) {
+            pulando = false;
+        }
+    }
+
+    if (!pulando && puloIncrement > 0) {
+        puloIncrement -= 0.1;
+        y -= 0.1;
+    }
+
+    if (agaixando) {
+        if (y >= 0.5) {
+            y -= 0.1;
+        }
+    } else {
+        if (y <= 3) {
+            y += 0.1;
+        }
+    }
+
+    glutPostRedisplay();
+    glutTimerFunc(gameSpeed,timerFunc,0);
+}
+
+void configureCam(){
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	gluPerspective(45.0f, 1.0f, 0.1f, 100.0f);
+    glMatrixMode( GL_MODELVIEW );
+    glLoadIdentity();
+    glEnable(GL_DEPTH_TEST);
+}
+
+void processNormalKeys(unsigned char key, int xx, int yy) {
+    float amount = 0.5f;
+
+	switch (key) {
+		case 'a':
+		    x += lx * amount - amount;
+			break;
+		case 'd':
+		    x += lx * amount + amount;
+			break;
+		case 'w':
+			x += lx * amount;
+			z += lz * amount;
+			break;
+		case 's':
+			x -= lx * amount;
+			z -= lz * amount;
+			break;
+	}
+
+	if (key == 27)
+		exit(0);
+
+    if (key == 32) {
+        pulando = true;
+    }
+}
+
+void procesSpecialUpKeys(int key, int xx, int yy)
+{
+    switch (key) {
+        case GLUT_KEY_CTRL_L:
+            agaixando = false;
+            break;
+    }
+}
 
 void processSpecialKeys(int key, int xx, int yy) {
 	float amount = 0.5f;
@@ -396,45 +470,10 @@ void processSpecialKeys(int key, int xx, int yy) {
 			x -= lx * amount;
 			z -= lz * amount;
 			break;
+        case GLUT_KEY_CTRL_L:
+            agaixando = true;
+            break;
 	}
-}
-
-void timerFunc(int x){
-    glutPostRedisplay();
-    glutTimerFunc(gameSpeed,timerFunc,0);
-}
-
-void configureCam(){
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	gluPerspective(45.0f, 1.0f, 0.1f, 100.0f);
-    glMatrixMode( GL_MODELVIEW );
-    glLoadIdentity();
-    glEnable(GL_DEPTH_TEST);
-}
-
-void processNormalKeys(unsigned char key, int xx, int yy) {
-    float amount = 0.5f;
-
-	switch (key) {
-		case 'a':
-		    //x += lx - amount;
-			break;
-		case 'd':
-		    //x += lx + amount;
-			break;
-		case 'w':
-			x += lx * amount;
-			z += lz * amount;
-			break;
-		case 's':
-			x -= lx * amount;
-			z -= lz * amount;
-			break;
-	}
-
-	if (key == 27)
-		exit(0);
 }
 
 void loadTexture()
@@ -504,10 +543,10 @@ void mouseMoviment(int x, int y) {
     }
     baseY = y;
 
-    if(x >= 580 || x <= 20)
+    if(x >= 500 || x <= 100)
         glutWarpPointer(_width / 2, y);
 
-    if(y >= 580 || y <= 20)
+    if(y >= 500 || y <= 100)
         glutWarpPointer(x, _height / 2);
 }
 
@@ -521,6 +560,7 @@ int main(int argc, char **argv){
 	glutTimerFunc(10,timerFunc,0);
 	glutKeyboardFunc(processNormalKeys);
 	glutSpecialFunc(processSpecialKeys);
+	glutSpecialUpFunc(procesSpecialUpKeys);
 	glutPassiveMotionFunc(mouseMoviment);
 	configureCam();
 	loadTexture();
