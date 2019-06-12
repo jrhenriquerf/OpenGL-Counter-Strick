@@ -17,7 +17,7 @@ GLfloat light_position[] = {1.0, 0.0, -5.0, 0.0};
 GLdouble angle=0.0; //�ngulo da c�mera
 GLdouble lx=0.0f,lz=-1.0f, ly = 0.0f; //dire��o da c�mera
 GLdouble x=0.0f,z=5.0f, y = 3.0f; //posi��o da c�mera
-GLuint textureID[5];
+GLuint textureID[6];
 GLfloat v[8][3];
 
 void setBoxSize(GLfloat size) {
@@ -338,6 +338,27 @@ void drawCharacter(){
 
 }
 
+void drawArm(){
+
+    glPushMatrix();
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, textureID[5]);
+    glColor3d(1, 1, 1);
+	glTranslatef(x+lx, 2.8, z+lz);
+	glRotated(90, 0 , 1, 0);
+    glScaled(.3, .3, .3);
+    setBoxSize(0.5);
+    GLfloat size = 1;
+        v[4][0] = v[5][0] = size / 2 + 1;
+        v[6][0] = v[7][0] = size / 2 + 4;
+
+        drawBox(GL_QUADS, 5, v);
+        glDisable(GL_TEXTURE_2D);
+
+	glPopMatrix();
+
+}
+
 void draw(){
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
@@ -351,6 +372,7 @@ void draw(){
     drawBigBlocks();
     drawSmallBlocks();
     drawCharacter();
+    drawArm();
 	glutSwapBuffers();
 }
 
@@ -420,7 +442,7 @@ void loadTexture()
     loadBMP("bricks.bmp");
     glEnable(GL_TEXTURE_2D);
 
-    glGenTextures(5, textureID);
+    glGenTextures(6, textureID);
     glBindTexture(GL_TEXTURE_2D, textureID[0]);
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, data);
@@ -450,6 +472,13 @@ void loadTexture()
 
     loadBMP("character.bmp");
     glBindTexture(GL_TEXTURE_2D, textureID[4]);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, data);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+    loadBMP("knife.bmp");
+    glBindTexture(GL_TEXTURE_2D, textureID[5]);
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, data);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
