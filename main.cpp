@@ -17,7 +17,7 @@ GLfloat light_position[] = {1.0, 0.0, -5.0, 0.0};
 GLdouble angle=0.0; //�ngulo da c�mera
 GLdouble lx=0.0f,lz=-1.0f, ly = 0.0f; //dire��o da c�mera
 GLdouble x=0.0f,z=5.0f, y = 3.0f; //posi��o da c�mera
-GLuint textureID[4];
+GLuint textureID[5];
 GLfloat v[8][3];
 
 void setBoxSize(GLfloat size) {
@@ -280,6 +280,63 @@ void drawSmallBlocks() {
         glDisable(GL_TEXTURE_2D);
     glPopMatrix();
 }
+void drawCharacter(){
+    glPushMatrix();
+    glColor3d(1, 1, 0);
+    glTranslatef(49,3,5);
+    glRotated(90, 0, 1, 0);
+    glEnable(GL_TEXTURE_2D);
+    glScaled(.4, 2, .1);
+    setBoxSize(4);
+	drawBox(GL_QUADS, 4, v);
+	glDisable(GL_TEXTURE_2D);
+	glPopMatrix();
+
+	glPushMatrix();
+    glColor3d(1, 1, 0);
+    glTranslatef(-49,3,5);
+    glRotated(-90, 0, 1, 0);
+    glEnable(GL_TEXTURE_2D);
+    glScaled(.4, 2, .1);
+    setBoxSize(4);
+	drawBox(GL_QUADS, 4, v);
+	glDisable(GL_TEXTURE_2D);
+	glPopMatrix();
+
+    glPushMatrix();
+    glColor3d(1, 1, 0);
+    glTranslatef(15,10,11);
+    glRotated(8, 0, 1, 0);
+    glEnable(GL_TEXTURE_2D);
+    glScaled(.4, 2, .1);
+    setBoxSize(4);
+	drawBox(GL_QUADS, 4, v);
+	glDisable(GL_TEXTURE_2D);
+	glPopMatrix();
+
+	glPushMatrix();
+    glColor3d(1, 1, 0);
+    glTranslatef(-15,10,11);
+    glRotated(8, 0, 1, 0);
+    glEnable(GL_TEXTURE_2D);
+    glScaled(.4, 2, .1);
+    setBoxSize(4);
+	drawBox(GL_QUADS, 4, v);
+	glDisable(GL_TEXTURE_2D);
+	glPopMatrix();
+
+	glPushMatrix();
+    glColor3d(1, 1, 0);
+    glTranslatef(-15,3,50);
+    glRotated(8, 0, 1, 0);
+    glEnable(GL_TEXTURE_2D);
+    glScaled(.4, 2, .1);
+    setBoxSize(4);
+	drawBox(GL_QUADS, 4, v);
+	glDisable(GL_TEXTURE_2D);
+	glPopMatrix();
+
+}
 
 void draw(){
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -293,9 +350,11 @@ void draw(){
     drawAroundWalls();
     drawBigBlocks();
     drawSmallBlocks();
-
+    drawCharacter();
 	glutSwapBuffers();
 }
+
+
 
 void processSpecialKeys(int key, int xx, int yy) {
 	float amount = 0.5f;
@@ -361,7 +420,7 @@ void loadTexture()
     loadBMP("bricks.bmp");
     glEnable(GL_TEXTURE_2D);
 
-    glGenTextures(4, textureID);
+    glGenTextures(5, textureID);
     glBindTexture(GL_TEXTURE_2D, textureID[0]);
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, data);
@@ -384,6 +443,13 @@ void loadTexture()
 
     loadBMP("ceu.bmp");
     glBindTexture(GL_TEXTURE_2D, textureID[3]);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, data);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+    loadBMP("character.bmp");
+    glBindTexture(GL_TEXTURE_2D, textureID[4]);
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, data);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
